@@ -1,0 +1,187 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700;800;900&display=swap');
+
+/* MAIN HERO */
+
+.portfolio {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  background: #12001f;
+}
+
+/* COLOR BENDS BACKGROUND */
+
+.background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+}
+
+.background .color-bends-container {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* LANYARD */
+
+.lanyard-container {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* CINEMATIC VIGNETTE */
+
+.portfolio::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  pointer-events: none;
+
+  background: radial-gradient(
+    ellipse at center,
+    transparent 35%,
+    rgba(0, 0, 0, 0.25) 65%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+/* BRAND NAME - TOP LEFT */
+
+.brand-name {
+  position: fixed;
+  top: 45px;
+  left: 90px;
+  z-index: 10;
+
+  color: #ffffff;
+
+  font-family: "Fira Code", monospace;
+  font-size: 35px;
+  font-weight: 800;
+  letter-spacing: 5px;
+
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.8),
+    0 0 18px rgba(255, 255, 255, 0.5);
+
+  cursor: default;
+
+  transition:
+    transform 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+.brand-name:hover {
+  transform: scale(1.05);
+
+  text-shadow:
+    0 0 8px #ffffff,
+    0 0 20px #ffffff,
+    0 0 35px rgba(255, 255, 255, 0.8);
+}
+
+/* RESUME LOGO - TOP RIGHT */
+
+.resume-logo {
+  position: fixed;
+  top: 45px;
+  right: 90px;
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.resume-logo-symbol {
+  font-size: 42px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -5px;
+
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.9),
+    0 0 16px rgba(255, 255, 255, 0.6);
+
+  transition:
+    transform 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+.resume-logo-label {
+  font-family: "Fira Code", monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+
+  opacity: 0;
+  transform: translateY(-5px);
+
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.resume-logo:hover .resume-logo-symbol {
+  transform: scale(1.12);
+
+  text-shadow:
+    0 0 8px #ffffff,
+    0 0 22px #ffffff,
+    0 0 40px rgba(255, 255, 255, 0.8);
+}
+
+.resume-logo:hover .resume-logo-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+  .brand-name {
+    top: 20px;
+    left: 20px;
+
+    font-size: 20px;
+    letter-spacing: 3px;
+  }
+
+  .resume-logo {
+    top: 20px;
+    right: 20px;
+  }
+
+  .resume-logo-symbol {
+    font-size: 34px;
+  }
+
+  .resume-logo-label {
+    font-size: 9px;
+  }
+}

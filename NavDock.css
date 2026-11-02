@@ -1,0 +1,290 @@
+/* FLOATING DOCK — macOS-style magnifying navigation */
+
+.nav-dock {
+  position: fixed;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  z-index: 80;
+
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+
+  height: 60px;
+  padding: 8px 12px;
+
+  border: 1px solid rgba(168, 85, 247, 0.26);
+  border-radius: 22px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(43, 16, 71, 0.72) 0%,
+    rgba(11, 0, 22, 0.88) 100%
+  );
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.55),
+    0 0 40px rgba(109, 40, 217, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+
+  overflow: visible;
+
+  transform: translateX(-50%);
+  animation: nav-dock-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+
+@keyframes nav-dock-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 24px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* soft purple halo behind the dock */
+.nav-dock-glow {
+  position: absolute;
+  inset: -30px -40px;
+  z-index: -1;
+
+  background: radial-gradient(
+    ellipse at center,
+    rgba(139, 92, 246, 0.28) 0%,
+    transparent 70%
+  );
+
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+.nav-dock-item {
+  position: relative;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 1px solid transparent;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #b6a3d4;
+
+  cursor: pointer;
+
+  will-change: width, height;
+
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.3s ease;
+}
+
+/* pointer-follow glow */
+.nav-dock-item::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+
+  background: radial-gradient(
+    60px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(216, 180, 254, 0.6) 0%,
+    rgba(168, 85, 247, 0.32) 42%,
+    transparent 72%
+  );
+
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.nav-dock-item:hover::before,
+.nav-dock-item:focus-visible::before {
+  opacity: 1;
+}
+
+.nav-dock-item:hover {
+  color: #ffffff;
+  border-color: rgba(192, 132, 252, 0.4);
+  background: rgba(168, 85, 247, 0.16);
+
+  box-shadow:
+    0 0 24px rgba(168, 85, 247, 0.5),
+    0 0 52px rgba(139, 92, 246, 0.28),
+    inset 0 0 16px rgba(192, 132, 252, 0.2);
+}
+
+.nav-dock-item:hover .nav-dock-icon {
+  filter: drop-shadow(0 0 8px rgba(216, 180, 254, 0.95));
+}
+
+.nav-dock-item:active .nav-dock-icon {
+  transform: scale(0.94);
+}
+
+.nav-dock-item:focus-visible {
+  outline: 2px solid rgba(192, 132, 252, 0.9);
+  outline-offset: 3px;
+}
+
+.nav-dock-item.is-active {
+  color: #ffffff;
+
+  border-color: rgba(192, 132, 252, 0.45);
+
+  background: linear-gradient(
+    180deg,
+    rgba(168, 85, 247, 0.38) 0%,
+    rgba(109, 40, 217, 0.2) 100%
+  );
+
+  box-shadow:
+    inset 0 0 12px rgba(216, 180, 254, 0.22),
+    0 0 22px rgba(168, 85, 247, 0.5);
+
+  animation: nav-active-pulse 2.6s ease-in-out infinite;
+}
+
+.nav-dock-item.is-active .nav-dock-icon {
+  filter: drop-shadow(0 0 7px rgba(192, 132, 252, 0.9));
+}
+
+@keyframes nav-active-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 12px rgba(216, 180, 254, 0.22),
+      0 0 18px rgba(168, 85, 247, 0.42);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 14px rgba(216, 180, 254, 0.3),
+      0 0 30px rgba(168, 85, 247, 0.65);
+  }
+}
+
+.nav-dock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 50%;
+
+  transition: filter 0.3s ease, transform 0.2s ease;
+}
+
+.nav-dock-icon svg {
+  width: 100%;
+  height: auto;
+}
+
+.nav-dock-active-dot {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #d8b4fe;
+  box-shadow: 0 0 8px #c084fc;
+
+  opacity: 0;
+
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease;
+}
+
+.nav-dock-item.is-active .nav-dock-active-dot {
+  opacity: 1;
+}
+
+/* tooltip above the hovered icon */
+.nav-dock-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  z-index: 2;
+
+  padding: 6px 10px;
+
+  border: 1px solid rgba(168, 85, 247, 0.34);
+  border-radius: 8px;
+
+  background: rgba(16, 2, 29, 0.94);
+
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  color: #e9d5ff;
+
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(109, 40, 217, 0.3);
+
+  pointer-events: none;
+}
+
+/* little arrow under the tooltip */
+.nav-dock-tooltip::after {
+  content: "";
+
+  position: absolute;
+  top: 100%;
+  left: 50%;
+
+  width: 7px;
+  height: 7px;
+
+  border-right: 1px solid rgba(168, 85, 247, 0.34);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.34);
+
+  background: rgba(16, 2, 29, 0.94);
+
+  transform: translate(-50%, -4px) rotate(45deg);
+}
+
+/* MOBILE */
+
+@media (max-width: 560px) {
+  .nav-dock {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    gap: 4px;
+
+    height: 56px;
+    padding: 6px 10px;
+
+    border-radius: 20px;
+  }
+
+  .nav-dock-tooltip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-dock,
+  .nav-dock-item {
+    animation: none !important;
+    transition: none !important;
+  }
+}
