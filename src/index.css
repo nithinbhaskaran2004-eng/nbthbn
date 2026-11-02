@@ -16,10 +16,12 @@ body,
 
 html {
   overflow: hidden;
+  background: #12001f;
 }
 
 body {
   overflow: hidden;
+  background: #12001f;
 }
 
 #root {

@@ -1,0 +1,524 @@
+/* ============================================================
+   PRELOADER
+   Purple glass intro — the "//" mark draws in, a counter runs,
+   then the screen splits and lifts away.
+   ============================================================ */
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  /* the shutter panels paint the backdrop, so sliding them
+     away actually reveals the hero underneath */
+  background: transparent;
+
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ------------------------------------------------------------
+   SHUTTER PANELS
+   ------------------------------------------------------------ */
+
+.preloader-curtain {
+  position: absolute;
+  left: 0;
+  z-index: 0;
+
+  width: 100%;
+  height: 50.5%;
+
+  background: #05000b;
+
+  will-change: transform;
+}
+
+.preloader-curtain--top {
+  top: 0;
+
+  background:
+    radial-gradient(
+      ellipse 72vw 58vh at 50% 100%,
+      rgba(109, 40, 217, 0.26) 0%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, #06000d 0%, #0a0016 100%);
+}
+
+.preloader-curtain--bottom {
+  bottom: 0;
+
+  background:
+    radial-gradient(
+      ellipse 72vw 58vh at 50% 0%,
+      rgba(109, 40, 217, 0.22) 0%,
+      transparent 72%
+    ),
+    linear-gradient(0deg, #06000d 0%, #0a0016 100%);
+}
+
+/* ------------------------------------------------------------
+   VEIL — grid, bloom, scanline, vignette
+   ------------------------------------------------------------ */
+
+.preloader-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+.preloader-veil::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(rgba(192, 132, 252, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(192, 132, 252, 0.06) 1px, transparent 1px);
+
+  background-size: 56px 56px;
+
+  -webkit-mask-image: radial-gradient(
+    ellipse 64% 62% at 50% 50%,
+    #000 0%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 64% 62% at 50% 50%,
+    #000 0%,
+    transparent 78%
+  );
+}
+
+.preloader-veil::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: radial-gradient(
+    ellipse at center,
+    transparent 28%,
+    rgba(0, 0, 0, 0.45) 68%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
+}
+
+.preloader-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  width: min(96vw, 820px);
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.32) 0%,
+    rgba(109, 40, 217, 0.14) 42%,
+    transparent 68%
+  );
+
+  filter: blur(40px);
+
+  transform: translate(-50%, -50%);
+
+  animation: preloader-bloom 5s ease-in-out infinite;
+}
+
+@keyframes preloader-bloom {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+.preloader-scan {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(192, 132, 252, 0.55) 45%,
+    rgba(243, 232, 255, 0.85) 50%,
+    rgba(192, 132, 252, 0.55) 55%,
+    transparent 100%
+  );
+
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.55);
+
+  opacity: 0.5;
+
+  animation: preloader-scan 3.4s linear infinite;
+}
+
+@keyframes preloader-scan {
+  0% {
+    transform: translateY(-2vh);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.5;
+  }
+  88% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(102vh);
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------
+   TOP LABELS
+   ------------------------------------------------------------ */
+
+.preloader-top {
+  position: absolute;
+  top: clamp(22px, 4vh, 40px);
+  right: clamp(20px, 4vw, 52px);
+  left: clamp(20px, 4vw, 52px);
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+
+  color: #6f5c8c;
+}
+
+/* ------------------------------------------------------------
+   CENTRE LOCKUP
+   ------------------------------------------------------------ */
+
+.preloader-content {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 3.4vw, 34px);
+
+  height: 100%;
+  padding: 24px;
+
+  text-align: center;
+}
+
+.preloader-mark {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 1.9vw, 24px);
+
+  height: clamp(84px, 13vw, 164px);
+}
+
+/* purple halo behind the mark */
+.preloader-mark::after {
+  content: "";
+
+  position: absolute;
+  inset: -70% -90%;
+
+  background: radial-gradient(
+    ellipse at center,
+    rgba(168, 85, 247, 0.42) 0%,
+    transparent 64%
+  );
+
+  filter: blur(30px);
+
+  pointer-events: none;
+}
+
+.preloader-slash-wrap {
+  display: block;
+
+  height: 100%;
+
+  transform: skewX(-20deg);
+}
+
+.preloader-slash {
+  display: block;
+
+  width: clamp(15px, 2vw, 26px);
+  height: 100%;
+
+  border-radius: 3px;
+
+  background: linear-gradient(
+    175deg,
+    #ffffff 0%,
+    #f3e8ff 24%,
+    #c084fc 60%,
+    #7c3aed 100%
+  );
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.55),
+    0 0 34px rgba(168, 85, 247, 0.6),
+    0 0 80px rgba(109, 40, 217, 0.55);
+
+  transform-origin: 50% 100%;
+}
+
+.preloader-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.preloader-word {
+  display: inline-flex;
+
+  padding-left: 0.42em;
+
+  font-family: "Fira Code", monospace;
+  font-size: clamp(18px, 2.9vw, 26px);
+  font-weight: 800;
+  line-height: 1;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 0 12px rgba(255, 255, 255, 0.45),
+    0 0 32px rgba(192, 132, 252, 0.55);
+}
+
+.preloader-letter {
+  display: inline-block;
+}
+
+.preloader-tag {
+  font-family: "Fira Code", monospace;
+  font-size: clamp(8px, 0.95vw, 10px);
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+
+  color: #a78bfa;
+
+  text-shadow: 0 0 16px rgba(168, 85, 247, 0.55);
+}
+
+/* ------------------------------------------------------------
+   HUD — status + counter
+   ------------------------------------------------------------ */
+
+.preloader-hud {
+  position: absolute;
+  right: clamp(20px, 4vw, 52px);
+  bottom: clamp(24px, 4.6vh, 46px);
+  left: clamp(20px, 4vw, 52px);
+  z-index: 2;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+
+  font-family: "Fira Code", monospace;
+}
+
+.preloader-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding-bottom: 6px;
+
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+
+  color: #8b76a8;
+}
+
+.preloader-status-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #c084fc;
+
+  box-shadow: 0 0 10px rgba(192, 132, 252, 0.9);
+
+  animation: preloader-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes preloader-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.preloader-count {
+  display: inline-flex;
+  align-items: flex-start;
+
+  font-family: "Fira Code", monospace;
+  font-size: clamp(30px, 4.4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+
+  color: #ffffff;
+
+  font-variant-numeric: tabular-nums;
+
+  text-shadow:
+    0 0 14px rgba(255, 255, 255, 0.35),
+    0 0 36px rgba(168, 85, 247, 0.5);
+}
+
+.preloader-count-unit {
+  margin-left: 7px;
+  padding-top: 3px;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+
+  color: #8b76a8;
+}
+
+.preloader-hint {
+  position: absolute;
+  bottom: clamp(14px, 2.4vh, 22px);
+  left: 50%;
+  z-index: 2;
+
+  transform: translateX(-50%);
+
+  font-family: "Fira Code", monospace;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  color: #6f5c8c;
+
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------
+   PROGRESS RAIL
+   ------------------------------------------------------------ */
+
+.preloader-progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+
+  height: 2px;
+
+  background: rgba(168, 85, 247, 0.16);
+
+  overflow: hidden;
+}
+
+.preloader-progress span {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  transform-origin: 0 50%;
+
+  background: linear-gradient(
+    90deg,
+    #6d28d9 0%,
+    #a855f7 58%,
+    #e9d5ff 100%
+  );
+
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.9);
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .preloader-top {
+    font-size: 8px;
+    letter-spacing: 0.22em;
+  }
+
+  .preloader-top span:last-child {
+    display: none;
+  }
+
+  .preloader-hint {
+    font-size: 7px;
+    letter-spacing: 0.24em;
+  }
+
+  .preloader-content {
+    gap: 22px;
+  }
+
+  .preloader-word {
+    padding-left: 0.34em;
+  }
+}
+
+/* ------------------------------------------------------------
+   REDUCED MOTION
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader-bloom,
+  .preloader-scan,
+  .preloader-status-dot {
+    animation: none;
+  }
+
+  .preloader-scan {
+    display: none;
+  }
+}

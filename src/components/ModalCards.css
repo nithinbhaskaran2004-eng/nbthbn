@@ -1,0 +1,164 @@
+/* ============================================================
+   MODAL CARDS
+   A card grid where any card grows into a full-screen glass panel.
+   Shared by the Projects folder grid and the video grid.
+   ============================================================ */
+
+.mc-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(12px, 3vw, 40px);
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(109, 40, 217, 0.26) 0%,
+      transparent 58%
+    ),
+    rgba(5, 0, 10, 0.74);
+
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+
+  overflow: hidden;
+}
+
+.mc-panel {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: min(1180px, 100%);
+  max-height: min(90dvh, 980px);
+
+  overflow: hidden;
+
+  border: 1px solid rgba(192, 132, 252, 0.28);
+  border-radius: 26px;
+
+  background: linear-gradient(
+    155deg,
+    rgba(88, 28, 135, 0.32) 0%,
+    rgba(24, 5, 41, 0.9) 42%,
+    rgba(8, 0, 16, 0.96) 100%
+  );
+
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.72),
+    0 0 90px rgba(109, 40, 217, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  backdrop-filter: blur(24px) saturate(130%);
+  -webkit-backdrop-filter: blur(24px) saturate(130%);
+}
+
+.mc-panel:focus {
+  outline: none;
+}
+
+/* small bloom in the panel corner, same as the page panels */
+.mc-panel::before {
+  content: "";
+
+  position: absolute;
+  top: -160px;
+  left: -120px;
+
+  width: 420px;
+  height: 380px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(168, 85, 247, 0.24) 0%,
+    transparent 68%
+  );
+
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.mc-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.mc-card {
+  display: block;
+
+  padding: 0;
+  border: 0;
+
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.mc-card:focus-visible {
+  outline: 2px solid rgba(192, 132, 252, 0.9);
+  outline-offset: 4px;
+  border-radius: 20px;
+}
+
+.mc-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 50%;
+
+  background: rgba(30, 10, 52, 0.6);
+  color: #d8c7ec;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.3s ease,
+    box-shadow 0.25s ease;
+}
+
+.mc-close:hover {
+  background: rgba(168, 85, 247, 0.24);
+  color: #ffffff;
+  transform: rotate(90deg);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.45);
+}
+
+.mc-close:focus-visible {
+  outline: 2px solid rgba(192, 132, 252, 0.9);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .mc-layer {
+    padding: 10px;
+  }
+
+  .mc-panel {
+    max-height: calc(100dvh - 20px);
+    border-radius: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-close {
+    transition: none;
+  }
+}

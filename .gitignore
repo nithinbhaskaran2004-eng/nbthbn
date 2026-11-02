@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# original video masters (web copies live in public/videos)
+media-source
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -4,6 +4,7 @@ import { AnimatePresence } from "motion/react";
 import Lanyard from "./components/Lanyard";
 import ColorBends from "./components/ColorBends";
 import NavDock from "./components/NavDock";
+import Preloader from "./components/Preloader";
 import PageShell from "./pages/PageShell";
 import AboutPage from "./pages/AboutPage";
 import ProjectsPage from "./pages/ProjectsPage";
@@ -23,9 +24,34 @@ function pageFromHash() {
   return PAGES[id] ? id : null;
 }
 
+const INTRO_KEY = "nbthbn:intro";
+
+/* the intro plays once per browser session.
+   append ?intro to the URL to replay it */
+function introAlreadyPlayed() {
+  try {
+    if (new URLSearchParams(window.location.search).has("intro")) return false;
+
+    return window.sessionStorage.getItem(INTRO_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 function App() {
   const [activePage, setActivePage] = useState(pageFromHash);
   const [direction, setDirection] = useState(1);
+  const [introDone, setIntroDone] = useState(introAlreadyPlayed);
+
+  const finishIntro = useCallback(() => {
+    try {
+      window.sessionStorage.setItem(INTRO_KEY, "1");
+    } catch {
+      /* storage can be blocked — the intro just replays next visit */
+    }
+
+    setIntroDone(true);
+  }, []);
 
   /* keep the overlay in sync with the URL hash (deep links + back button) */
   useEffect(() => {
@@ -102,14 +128,15 @@ function App() {
     };
 
     const handleWheel = (event) => {
+      if (!introDone) return;
       if (event.ctrlKey) return;
       if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
 
       const now = Date.now();
       if (now < lockedUntil) return;
 
-      /* never hijack scrolling inside the video lightbox */
-      if (document.querySelector("[data-video-lightbox]")) return;
+      /* never hijack scrolling inside an open project modal or player */
+      if (document.querySelector("[data-project-modal]")) return;
 
       /* scrolling the panel body counts as reading, not as a page change */
       if (canScrollInside(document.querySelector(".page-body"), event.deltaY)) {
@@ -140,7 +167,7 @@ function App() {
 
     window.addEventListener("wheel", handleWheel, { passive: true });
     return () => window.removeEventListener("wheel", handleWheel);
-  }, [activePage, navigate]);
+  }, [activePage, introDone, navigate]);
 
   const page = activePage ? PAGES[activePage] : null;
   const PageComponent = page?.Component;
@@ -225,6 +252,9 @@ function App() {
           </PageShell>
         )}
       </AnimatePresence>
+
+      {/* Intro — runs once per session, then unmounts */}
+      {!introDone && <Preloader onDone={finishIntro} />}
     </>
   );
 }
