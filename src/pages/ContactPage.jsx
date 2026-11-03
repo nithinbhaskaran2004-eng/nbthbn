@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Check, Mail, Send } from "lucide-react";
+import PulseHeart from "../components/PulseHeart";
 import { InstagramIcon, LinkedinIcon } from "../components/BrandIcons";
 import { profile, socials } from "../data/portfolio";
+import {
+  likesAreLive,
+  loadLikes,
+  persistLike,
+  refreshLikeCount,
+} from "../lib/likes";
 
 const SOCIAL_ICONS = {
   instagram: InstagramIcon,
@@ -167,6 +174,73 @@ function SlideToSend({ sent, onComplete }) {
   );
 }
 
+function LikeBar() {
+  const [state, setState] = useState({ count: 0, liked: false, ready: false });
+  const [live, setLive] = useState(likesAreLive);
+
+  useEffect(() => {
+    let alive = true;
+
+    loadLikes().then((loaded) => {
+      if (!alive) return;
+      setState({ count: loaded.count, liked: loaded.liked, ready: true });
+      setLive(loaded.live);
+    });
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  /* keep the number fresh when the site has a real backend */
+  useEffect(() => {
+    if (!live) return undefined;
+
+    const id = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+
+      refreshLikeCount().then((count) => {
+        if (count === null) return;
+        setState((current) => ({ ...current, count }));
+      });
+    }, 20000);
+
+    return () => window.clearInterval(id);
+  }, [live]);
+
+  const handleChange = (liked, count) => {
+    setState((current) => ({ ...current, liked, count }));
+    persistLike(liked, count);
+  };
+
+  return (
+    <section className="like-bar">
+      <div className="like-copy">
+        <span className="like-kicker">Appreciate the work?</span>
+        <p className="like-text">Leave a like — it genuinely makes my day.</p>
+      </div>
+
+      <div className="like-action">
+        <PulseHeart
+          liked={state.liked}
+          count={state.count}
+          onChange={handleChange}
+          disabled={!state.ready}
+          label="Leave a like"
+          size={32}
+          corner={999}
+          likedColor="#ff4d6d"
+          idleColor="#a78bfa"
+          pillColor="rgba(10, 0, 20, 0.55)"
+          textColor="#e9d5ff"
+          className="like-heart"
+        />
+        {live && <span className="like-meta">live count</span>}
+      </div>
+    </section>
+  );
+}
+
 export default function ContactPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [sent, setSent] = useState(false);
@@ -301,6 +375,8 @@ export default function ContactPage() {
           </p>
         )}
       </form>
+
+      <LikeBar />
     </div>
   );
 }
