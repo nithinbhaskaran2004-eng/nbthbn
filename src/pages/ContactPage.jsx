@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ArrowUpRight, Mail, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, Check, Mail, Send } from "lucide-react";
 import { InstagramIcon, LinkedinIcon } from "../components/BrandIcons";
 import { profile, socials } from "../data/portfolio";
 
@@ -11,9 +11,166 @@ const SOCIAL_ICONS = {
 
 const EMPTY_FORM = { name: "", email: "", message: "" };
 
+const KNOB_SIZE = 52;
+const TRACK_PADDING = 5;
+
+function SlideToSend({ sent, onComplete }) {
+  const trackRef = useRef(null);
+  const offsetRef = useRef(0);
+  const dragRef = useRef({ startX: 0, max: 0 });
+  const completedRef = useRef(false);
+
+  const [offset, setOffset] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const [trackWidth, setTrackWidth] = useState(0);
+
+  useEffect(() => {
+    const element = trackRef.current;
+    if (!element) return undefined;
+
+    setTrackWidth(element.clientWidth);
+
+    const observer = new ResizeObserver(() => {
+      setTrackWidth(element.clientWidth);
+    });
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const getMax = () => Math.max(0, trackWidth - KNOB_SIZE - TRACK_PADDING * 2);
+
+  const moveTo = (value) => {
+    offsetRef.current = value;
+    setOffset(value);
+  };
+
+  const finish = () => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    setDragging(false);
+
+    const accepted = onComplete();
+
+    if (!accepted) {
+      completedRef.current = false;
+      moveTo(0);
+      return;
+    }
+
+    moveTo(getMax());
+  };
+
+  const onPointerDown = (event) => {
+    if (sent) return;
+    dragRef.current = {
+      startX: event.clientX - offsetRef.current,
+      max: getMax(),
+    };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setDragging(true);
+    event.preventDefault();
+    event.currentTarget.focus?.({ preventScroll: true });
+  };
+
+  const onPointerMove = (event) => {
+    if (!dragging || sent) return;
+    const { startX, max } = dragRef.current;
+    moveTo(Math.min(max, Math.max(0, event.clientX - startX)));
+  };
+
+  const onPointerUp = (event) => {
+    if (!dragging) return;
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    setDragging(false);
+
+    if (offsetRef.current >= dragRef.current.max * 0.85) {
+      finish();
+    } else {
+      moveTo(0);
+    }
+  };
+
+  const onKeyDown = (event) => {
+    if (sent) return;
+    const max = getMax();
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      finish();
+      return;
+    }
+
+    if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      event.preventDefault();
+      moveTo(Math.min(max, offsetRef.current + max * 0.18));
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      event.preventDefault();
+      moveTo(Math.max(0, offsetRef.current - max * 0.18));
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      moveTo(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      finish();
+    }
+  };
+
+  const max = getMax();
+  const progress = max ? offset / max : 0;
+  const label = sent
+    ? "Message ready"
+    : progress >= 0.8
+      ? "Release to send"
+      : "Slide to send";
+
+  return (
+    <div
+      ref={trackRef}
+      className={`slide-send${dragging ? " is-dragging" : ""}${sent ? " is-done" : ""}`}
+      role="slider"
+      tabIndex={sent ? -1 : 0}
+      aria-label="Slide to send message"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(progress * 100)}
+      aria-valuetext={label}
+      aria-disabled={sent}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onKeyDown={onKeyDown}
+    >
+      <span
+        className="slide-send-fill"
+        style={{ width: `${offset + KNOB_SIZE + TRACK_PADDING}px` }}
+        aria-hidden="true"
+      />
+
+      <span className="slide-send-label" aria-hidden="true">
+        {label}
+      </span>
+
+      <span
+        className="slide-send-knob"
+        style={{ transform: `translateX(${offset}px)` }}
+        aria-hidden="true"
+      >
+        {sent ? (
+          <Check size={18} strokeWidth={2.4} />
+        ) : (
+          <Send size={17} strokeWidth={2} />
+        )}
+      </span>
+    </div>
+  );
+}
+
 export default function ContactPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [sent, setSent] = useState(false);
+  const formRef = useRef(null);
 
   const updateField = (event) => {
     const { name, value } = event.target;
@@ -32,6 +189,16 @@ export default function ContactPage() {
 
     window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
     setSent(true);
+  };
+
+  const handleSlideComplete = () => {
+    const formElement = formRef.current;
+    if (!formElement) return false;
+
+    if (!formElement.reportValidity()) return false;
+
+    formElement.requestSubmit();
+    return true;
   };
 
   return (
@@ -74,7 +241,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <form className="contact-form" onSubmit={handleSubmit}>
+      <form className="contact-form" ref={formRef} onSubmit={handleSubmit}>
         <div className="field">
           <label className="field-label" htmlFor="contact-name">
             Your name
@@ -125,10 +292,7 @@ export default function ContactPage() {
           />
         </div>
 
-        <button className="contact-submit" type="submit">
-          Send message
-          <Send size={14} strokeWidth={2} aria-hidden="true" />
-        </button>
+        <SlideToSend sent={sent} onComplete={handleSlideComplete} />
 
         {sent && (
           <p className="form-note" role="status">

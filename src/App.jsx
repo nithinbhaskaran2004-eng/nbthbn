@@ -200,6 +200,7 @@ function App() {
           <Lanyard
             frontImage="/card-front.png"
             backImage="/card-back.png"
+            backText="I turn imagination into evidence. If you can imagine it, I can make it visible."
             imageFit="cover"
             cardColor="#581C87"
             orientation="portrait"
