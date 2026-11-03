@@ -1,6 +1,6 @@
 'use client';
 import "./Lanyard.css";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import './Lanyard.css';
@@ -423,7 +423,7 @@ const drawFitted = (ctx, image, width, height, fit) => {
   ctx.drawImage(image, (width - w) / 2, (height - h) / 2, w, h);
 };
 
-const paintFace = (canvas, image, color, fit, label, labelColor) => {
+const paintFace = (canvas, image, color, fit, label, labelColor, centerText) => {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
@@ -432,6 +432,41 @@ const paintFace = (canvas, image, color, fit, label, labelColor) => {
 
   if (image) {
     drawFitted(ctx, image, canvas.width, canvas.height, fit);
+  }
+
+  // Centered statement on the back face
+  if (centerText) {
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '700 62px "Fira Code", monospace';
+
+    const maxWidth = canvas.width * 0.8;
+    const words = centerText.split(/\s+/);
+    const lines = [];
+    let line = '';
+
+    words.forEach(word => {
+      const test = line ? `${line} ${word}` : word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    });
+    if (line) lines.push(line);
+
+    const lineHeight = 80;
+    const startY = canvas.height / 2 - ((lines.length - 1) * lineHeight) / 2;
+
+    ctx.fillStyle = '#f8f3ff';
+
+    lines.forEach((text, index) => {
+      ctx.fillText(text, canvas.width / 2, startY + index * lineHeight);
+    });
+
+    ctx.restore();
   }
 
   // Card label
@@ -719,6 +754,7 @@ const stepSimulation = (sim, dt, physics, time) => {
 const Lanyard = ({
   frontImage,
   backImage,
+  backText,
   imageFit = 'cover',
   cardColor = '#ffffff',
   orientation = 'portrait',
@@ -743,10 +779,12 @@ const Lanyard = ({
   const containerRef = useRef(null);
   const settingsRef = useRef(null);
   const applyRef = useRef(null);
+  const [hovered, setHovered] = useState(false);
 
   settingsRef.current = {
     frontImage,
     backImage,
+    backText,
     imageFit: imageFit === 'contain' ? 'contain' : 'cover',
     cardColor,
     orientation: orientation === 'landscape' ? 'landscape' : 'portrait',
@@ -926,7 +964,8 @@ paintFace(
   color,
   s.imageFit,
   '//',
-  '#FFFFFF'
+  '#FFFFFF',
+  s.backText
 );
       frontTexture.needsUpdate = true;
       backTexture.needsUpdate = true;
@@ -1012,7 +1051,7 @@ paintFace(
           repaintStrap();
         });
       }
-      const faceKey = `${layoutKey}|${s.cardColor}|${s.imageFit}`;
+      const faceKey = `${layoutKey}|${s.cardColor}|${s.imageFit}|${s.backText}`;
       if (faceKey !== applied.faceKey) paintFaces();
       if (s.strapColor !== applied.strapColor) repaintStrap();
 
@@ -1233,6 +1272,7 @@ paintFace(
       press = { x: event.clientX, y: event.clientY, time: performance.now(), point: hit.point.clone() };
       canvas.setPointerCapture?.(event.pointerId);
       setCursor('grabbing');
+      setHovered(false);
       event.preventDefault();
       start();
     };
@@ -1248,7 +1288,14 @@ paintFace(
       }
       if (event.pointerType === 'touch') return;
       hovering = !!pickCard();
+      setHovered(hovering);
       setCursor(hovering ? 'grab' : '');
+    };
+
+    const onPointerLeave = () => {
+      hovering = false;
+      setHovered(false);
+      setCursor('');
     };
 
     const onPointerUp = event => {
@@ -1257,6 +1304,11 @@ paintFace(
       if (press && event.type === 'pointerup' && performance.now() - press.time < 450) flip(press.point);
       press = null;
       canvas.releasePointerCapture?.(event.pointerId);
+      if (event.pointerType !== 'touch') {
+        toPointer(event);
+        hovering = !!pickCard();
+        setHovered(hovering);
+      }
       setCursor(hovering && event.pointerType !== 'touch' ? 'grab' : '');
       start();
     };
@@ -1269,6 +1321,7 @@ paintFace(
 
     canvas.addEventListener('pointerdown', onPointerDown);
     canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerleave', onPointerLeave);
     canvas.addEventListener('pointerup', onPointerUp);
     canvas.addEventListener('pointercancel', onPointerUp);
     canvas.addEventListener('lostpointercapture', onPointerUp);
@@ -1307,6 +1360,7 @@ paintFace(
       document.removeEventListener('visibilitychange', onVisibility);
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointermove', onPointerMove);
+      canvas.removeEventListener('pointerleave', onPointerLeave);
       canvas.removeEventListener('pointerup', onPointerUp);
       canvas.removeEventListener('pointercancel', onPointerUp);
       canvas.removeEventListener('lostpointercapture', onPointerUp);
@@ -1320,7 +1374,16 @@ paintFace(
     };
   }, []);
 
-  return <div ref={containerRef} className={`lanyard ${className}`.trim()} style={style} />;
+  return (
+    <div ref={containerRef} className={`lanyard ${className}`.trim()} style={style}>
+      <span
+        className={`lanyard-hint${hovered ? ' is-visible' : ''}`}
+        aria-hidden="true"
+      >
+        flip me
+      </span>
+    </div>
+  );
 };
 
 export default Lanyard;
