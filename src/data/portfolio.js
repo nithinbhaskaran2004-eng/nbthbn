@@ -17,8 +17,9 @@ export const profile = {
     "I'm not just an editor — I'm your creative brand partner.",
   bio: [
     "I'm not just an editor — I'm your creative brand partner.",
-    "Cinematic pacing, clean sound and motion that hits — for creators, brands and anyone with a story to sell.",
-    "AI is part of my workflow, not my personality: faster turnarounds, bigger ideas, same craft. Short-form, promos, showreels — if it moves, I make it land.",
+    "I'm a video editor obsessed with the little things that make a video hit differently.",
+    "The cut that lands perfectly. The sound that changes everything. The frame that makes you stop scrolling.",
+    "I work across short-form content, cinematic edits, motion graphics, and visual storytelling, turning raw footage and rough ideas into something worth watching.",
   ],
   stats: [
     { value: "1+", label: "Years editing" },
@@ -51,27 +52,14 @@ export const profile = {
       ],
     },
     {
-      group: "AI-Powered Creativity",
+      group: "AI-Powered Content",
       items: [
         "AI Video Generation",
         "AI-Assisted Editing",
-        "Generative Backgrounds",
-        "AI Image Generation",
-        "Visual Concept Development",
         "Prompt Design",
-        "Creative Workflow Automation",
-      ],
-    },
-    {
-      group: "Content & Storytelling",
-      items: [
-        "Instagram Reels",
-        "YouTube Videos",
-        "Brand Promos",
-        "Advertisement Editing",
-        "Explainer Videos",
         "Short-Form Storytelling",
-        "Social Media Content",
+        "Instagram Reels",
+        "Brand Promos",
       ],
     },
   ],

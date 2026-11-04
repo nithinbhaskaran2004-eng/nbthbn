@@ -915,6 +915,8 @@
   min-height: 104px;
 }
 
+/* slide to send — ghost rail that matches the glass / outline UI */
+
 .slide-send {
   position: relative;
 
@@ -924,16 +926,14 @@
   margin-top: 6px;
   padding: 5px;
 
-  border: 1px solid rgba(192, 132, 252, 0.5);
-  border-radius: 999px;
+  border: 1px solid rgba(168, 85, 247, 0.26);
+  border-radius: 14px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(168, 85, 247, 0.12) 0%,
-      rgba(109, 40, 217, 0.08) 100%
-    ),
-    rgba(10, 0, 20, 0.55);
+  background: linear-gradient(
+    180deg,
+    rgba(30, 10, 52, 0.55) 0%,
+    rgba(10, 0, 20, 0.55) 100%
+  );
 
   overflow: hidden;
   cursor: grab;
@@ -942,21 +942,54 @@
   -webkit-user-select: none;
   touch-action: none;
 
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+
   box-shadow:
-    0 10px 26px rgba(109, 40, 217, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 26px rgba(109, 40, 217, 0.1);
 
   transition:
     border-color 0.25s ease,
     box-shadow 0.25s ease;
 }
 
+/* trailing chevrons hint at the drag direction */
+.slide-send::before {
+  content: "›››";
+
+  position: absolute;
+  top: 50%;
+  right: 20px;
+
+  transform: translateY(-52%);
+
+  font-family: "Fira Code", monospace;
+  font-size: 15px;
+  letter-spacing: 3px;
+
+  color: rgba(216, 180, 254, 0.35);
+
+  pointer-events: none;
+
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease,
+    opacity 0.25s ease;
+}
+
 .slide-send:hover {
-  border-color: rgba(216, 180, 254, 0.75);
+  border-color: rgba(192, 132, 252, 0.5);
 
   box-shadow:
-    0 12px 30px rgba(109, 40, 217, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 26px rgba(109, 40, 217, 0.16),
+    0 0 22px rgba(139, 92, 246, 0.16);
+}
+
+.slide-send:hover::before {
+  color: rgba(216, 180, 254, 0.6);
+  transform: translate(3px, -52%);
 }
 
 .slide-send:focus-visible {
@@ -966,11 +999,18 @@
 
 .slide-send.is-dragging {
   cursor: grabbing;
+  border-color: rgba(216, 180, 254, 0.6);
 }
 
 .slide-send.is-done {
-  border-color: rgba(110, 231, 183, 0.45);
+  border-color: rgba(255, 255, 255, 0.5);
   cursor: default;
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.slide-send.is-done::before {
+  opacity: 0;
 }
 
 .slide-send-fill {
@@ -979,13 +1019,16 @@
   bottom: 0;
   left: 0;
 
-  border-radius: 999px;
+  border-radius: 14px;
 
   background: linear-gradient(
     90deg,
-    rgba(109, 40, 217, 0.55) 0%,
-    rgba(168, 85, 247, 0.7) 100%
+    rgba(139, 92, 246, 0.14) 0%,
+    rgba(168, 85, 247, 0.26) 78%,
+    rgba(192, 132, 252, 0.42) 100%
   );
+
+  box-shadow: inset -1px 0 0 rgba(216, 180, 254, 0.45);
 
   pointer-events: none;
 
@@ -997,11 +1040,8 @@
 }
 
 .slide-send.is-done .slide-send-fill {
-  background: linear-gradient(
-    90deg,
-    rgba(16, 120, 92, 0.5) 0%,
-    rgba(110, 231, 183, 0.4) 100%
-  );
+  background: linear-gradient(90deg, #f7f3ff 0%, #ffffff 100%);
+  box-shadow: none;
 }
 
 .slide-send-label {
@@ -1013,18 +1053,25 @@
   justify-content: center;
 
   font-family: "Fira Code", monospace;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 2.4px;
+  letter-spacing: 3px;
   text-transform: uppercase;
 
-  color: #c9b3e6;
+  color: #a78bfa;
 
   pointer-events: none;
+
+  transition: color 0.25s ease;
+}
+
+.slide-send:hover .slide-send-label,
+.slide-send.is-dragging .slide-send-label {
+  color: #d8b4fe;
 }
 
 .slide-send.is-done .slide-send-label {
-  color: #a7f3d0;
+  color: #1a0b2e;
 }
 
 .slide-send-knob {
@@ -1038,41 +1085,60 @@
   width: 52px;
   height: 52px;
 
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 50%;
+  border: 1px solid rgba(192, 132, 252, 0.38);
+  border-radius: 10px;
 
   background: linear-gradient(
     180deg,
-    rgba(192, 132, 252, 0.98) 0%,
-    rgba(126, 34, 206, 0.96) 100%
+    rgba(59, 24, 92, 0.95) 0%,
+    rgba(30, 10, 52, 0.98) 100%
+  );
+
+  color: #d8b4fe;
+
+  box-shadow:
+    0 4px 16px rgba(76, 29, 149, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  transition:
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.slide-send:hover .slide-send-knob {
+  border-color: rgba(216, 180, 254, 0.7);
+  color: #ffffff;
+}
+
+.slide-send.is-dragging .slide-send-knob {
+  transition: none;
+
+  border-color: rgba(216, 180, 254, 0.85);
+
+  background: linear-gradient(
+    180deg,
+    rgba(139, 92, 246, 0.95) 0%,
+    rgba(91, 33, 182, 0.98) 100%
   );
 
   color: #ffffff;
 
   box-shadow:
-    0 6px 18px rgba(109, 40, 217, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-
-  transition:
-    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    background 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-.slide-send.is-dragging .slide-send-knob {
-  transition: none;
+    0 6px 22px rgba(139, 92, 246, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .slide-send.is-done .slide-send-knob {
-  background: linear-gradient(
-    180deg,
-    rgba(110, 231, 183, 0.95) 0%,
-    rgba(16, 120, 92, 0.95) 100%
-  );
+  background: #ffffff;
 
-  box-shadow:
-    0 6px 18px rgba(16, 120, 92, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: #1a0b2e;
+
+  border-color: rgba(255, 255, 255, 0.9);
+
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
 }
 
 .form-note {
@@ -1083,6 +1149,76 @@
   line-height: 1.6;
 
   color: #a78bfa;
+}
+
+/* like bar */
+
+.like-bar {
+  grid-column: 1 / -1;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-top: 2px;
+  padding: 15px 18px;
+
+  border: 1px solid rgba(168, 85, 247, 0.18);
+  border-radius: 16px;
+
+  background: rgba(20, 4, 35, 0.45);
+}
+
+.like-kicker {
+  display: block;
+
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  color: #9d87bd;
+}
+
+.like-text {
+  margin: 5px 0 0;
+
+  font-size: 13px;
+  color: #bdaed4;
+}
+
+.like-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.like-meta {
+  font-family: "Fira Code", monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+
+  color: #7d6a99;
+}
+
+.like-heart .pulse-heart__pill {
+  border: 1px solid rgba(192, 132, 252, 0.28);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.like-heart:hover .pulse-heart__pill {
+  border-color: rgba(216, 180, 254, 0.55);
 }
 
 /* ------------------------------------------------------------
@@ -1132,6 +1268,12 @@
   .stat-label {
     font-size: 8px;
     letter-spacing: 1px;
+  }
+
+  .like-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
   }
 }
 
