@@ -179,7 +179,7 @@ export const socials = [
     id: "instagram",
     label: "Instagram",
     handle: "@nbthbn",
-    href: "https://www.instagram.com/",
+    href: "https://www.instagram.com/nbthbn/",
   },
   {
     id: "linkedin",
