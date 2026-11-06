@@ -1,0 +1,20 @@
+// Deploy config for Cloudflare Workers (`wrangler deploy`).
+//
+// Why this file is required: with no explicit Wrangler config, `wrangler deploy`
+// runs framework auto-detection, which parses vite.config.js using esprima
+// (ES2017 syntax only). That file uses `import.meta.url`, which esprima cannot
+// parse, so the build dies with:
+//
+//   ✘ [ERROR] Error parsing file: /opt/buildhome/repo/vite.config.js
+//
+// Declaring the assets directory here skips auto-detection entirely. This is a
+// plain static Vite build, not a @cloudflare/vite-plugin project, so no plugin
+// or Worker script is needed — Cloudflare serves ./dist as static assets.
+{
+  "name": "nbthbn",
+  "compatibility_date": "2026-11-06",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
