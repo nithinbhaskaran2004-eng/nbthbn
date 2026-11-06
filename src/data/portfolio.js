@@ -16,52 +16,23 @@ export const profile = {
   tagline:
     "I'm not just an editor — I'm your creative brand partner.",
   bio: [
-    "I'm not just an editor — I'm your creative brand partner.",
-    "I'm a video editor obsessed with the little things that make a video hit differently.",
-    "The cut that lands perfectly. The sound that changes everything. The frame that makes you stop scrolling.",
-    "I work across short-form content, cinematic edits, motion graphics, and visual storytelling, turning raw footage and rough ideas into something worth watching.",
+    "I'm not just an editor. I'm your creative brand partner.",
+    "I'm a video editor obsessed with the **little things** that make a video **hit differently**.",
+    "The **cut** that lands perfectly. The **sound** that changes everything. The **frame** that makes you **stop scrolling**.",
+    "I work across **short-form content**, **cinematic edits**, **motion graphics**, and **visual storytelling**, turning raw footage and rough ideas into **something worth watching**.",
   ],
   stats: [
     { value: "1+", label: "Years editing" },
-    { value: "24+", label: "Projects created" },
+    { value: "30+", label: "Projects and counting" },
     { value: "∞", label: "Creative possibilities" },
   ],
   stack: [
-    {
-      group: "Editing & Post-Production",
-      items: [
-        "DaVinci Resolve",
-        "Adobe Premiere Pro",
-        "Color Grading",
-        "Sound Design",
-        "Video Transitions",
-        "Cinematic Editing",
-        "Pacing & Rhythm",
-      ],
-    },
-    {
-      group: "Motion & Visual Design",
-      items: [
-        "Motion Graphics",
-        "Kinetic Typography",
-        "Visual Effects",
-        "Compositing",
-        "Blender",
-        "Graphic Design",
-        "Logo Animation",
-      ],
-    },
-    {
-      group: "AI-Powered Content",
-      items: [
-        "AI Video Generation",
-        "AI-Assisted Editing",
-        "Prompt Design",
-        "Short-Form Storytelling",
-        "Instagram Reels",
-        "Brand Promos",
-      ],
-    },
+    "DaVinci Resolve",
+    "Adobe Premiere Pro",
+    "Color Grading",
+    "Sound Design",
+    "Motion Graphics",
+    "AI Video Generation",
   ],
   timeline: [
     {

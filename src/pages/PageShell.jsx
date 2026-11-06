@@ -32,7 +32,7 @@ const panelVariants = {
   }),
 };
 
-export default function PageShell({ label, title, direction = 1, onClose, children }) {
+export default function PageShell({ label, title, direction = 1, onClose, noScroll = false, children }) {
   const closeRef = useRef(null);
 
   /* Escape closes the panel + move focus into the dialog */
@@ -91,7 +91,9 @@ export default function PageShell({ label, title, direction = 1, onClose, childr
           </button>
         </header>
 
-        <div className="page-body">{children}</div>
+        <div className={`page-body${noScroll ? " page-body--fit" : ""}`}>
+          {children}
+        </div>
       </motion.div>
     </motion.div>
   );
