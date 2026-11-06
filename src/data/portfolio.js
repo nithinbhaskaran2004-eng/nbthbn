@@ -185,7 +185,7 @@ export const socials = [
     id: "linkedin",
     label: "LinkedIn",
     handle: "in/nbthbn",
-    href: "https://www.linkedin.com/",
+    href: "https://www.linkedin.com/in/nbthbn",
   },
   {
     id: "email",
