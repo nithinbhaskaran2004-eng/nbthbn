@@ -17,7 +17,7 @@ const PAGES = {
   contact: { label: "Contact", title: "Get In Touch", Component: ContactPage, noScroll: true },
 };
 
-const PAGE_SEQUENCE = ["home", "projects", "about", "contact"];
+const PAGE_SEQUENCE = ["home", "projects", "contact", "about"];
 
 function pageFromHash() {
   const id = window.location.hash.replace(/^#\/?/, "").toLowerCase();
