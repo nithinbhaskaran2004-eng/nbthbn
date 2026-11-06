@@ -10,7 +10,7 @@ export const profile = {
   role: "Video Editor",
   cardRole: "Video Editor",
   location: "Remote · Worldwide",
-  email: "hello@nbthbn.dev",
+  email: "nbthbn.media@gmail.com",
   photo: "/card-front.png",
   availability: "Available for work",
   tagline:
@@ -190,7 +190,7 @@ export const socials = [
   {
     id: "email",
     label: "Email",
-    handle: "hello@nbthbn.dev",
-    href: "mailto:hello@nbthbn.dev",
+    handle: "nbthbn.media@gmail.com",
+    href: "mailto:nbthbn.media@gmail.com",
   },
 ];
