@@ -12,8 +12,8 @@ import "./NavDock.css";
 
 const NAV_ITEMS = [
   { id: "home", label: "Home", icon: House },
-  { id: "about", label: "About", icon: UserRound },
   { id: "projects", label: "Projects", icon: FolderGit2 },
+  { id: "about", label: "About", icon: UserRound },
   { id: "contact", label: "Contact", icon: Mail },
 ];
 
