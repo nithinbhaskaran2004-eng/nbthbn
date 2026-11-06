@@ -282,7 +282,10 @@ export default function ContactPage() {
           Have a project, an idea, or just a question? My inbox is always open.
         </p>
 
-        <a className="contact-mail" href={`mailto:${profile.email}`}>
+        <a
+          className="contact-mail"
+          href={`mailto:${profile.email}?subject=Project%20enquiry`}
+        >
           {profile.email}
           <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
         </a>

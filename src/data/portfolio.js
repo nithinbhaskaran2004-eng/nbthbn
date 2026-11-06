@@ -184,13 +184,13 @@ export const socials = [
   {
     id: "linkedin",
     label: "LinkedIn",
-    handle: "in/nbthbn",
-    href: "https://www.linkedin.com/in/nbthbn",
+    handle: "in/nithin-bhaskaran",
+    href: "https://www.linkedin.com/in/nithin-bhaskaran-71aa8b240",
   },
   {
     id: "email",
     label: "Email",
     handle: "nbthbn.media@gmail.com",
-    href: "mailto:nbthbn.media@gmail.com",
+    href: "mailto:nbthbn.media@gmail.com?subject=Project%20enquiry",
   },
 ];
