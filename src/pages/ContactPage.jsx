@@ -18,10 +18,13 @@ const SOCIAL_ICONS = {
 
 const EMPTY_FORM = { name: "", email: "", message: "" };
 
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY ?? "";
+
 const KNOB_SIZE = 52;
 const TRACK_PADDING = 5;
 
-function SlideToSend({ sent, onComplete }) {
+function SlideToSend({ sent, sending, onComplete }) {
   const trackRef = useRef(null);
   const offsetRef = useRef(0);
   const dragRef = useRef({ startX: 0, max: 0 });
@@ -52,12 +55,18 @@ function SlideToSend({ sent, onComplete }) {
     setOffset(value);
   };
 
-  const finish = () => {
-    if (completedRef.current) return;
+  const finish = async () => {
+    if (completedRef.current || sent || sending) return;
     completedRef.current = true;
     setDragging(false);
 
-    const accepted = onComplete();
+    let accepted = false;
+
+    try {
+      accepted = await onComplete();
+    } catch {
+      accepted = false;
+    }
 
     if (!accepted) {
       completedRef.current = false;
@@ -69,7 +78,7 @@ function SlideToSend({ sent, onComplete }) {
   };
 
   const onPointerDown = (event) => {
-    if (sent) return;
+    if (sent || sending) return;
     dragRef.current = {
       startX: event.clientX - offsetRef.current,
       max: getMax(),
@@ -99,7 +108,7 @@ function SlideToSend({ sent, onComplete }) {
   };
 
   const onKeyDown = (event) => {
-    if (sent) return;
+    if (sent || sending) return;
     const max = getMax();
 
     if (event.key === "Enter" || event.key === " ") {
@@ -126,23 +135,25 @@ function SlideToSend({ sent, onComplete }) {
   const max = getMax();
   const progress = max ? offset / max : 0;
   const label = sent
-    ? "Message ready"
-    : progress >= 0.8
-      ? "Release to send"
-      : "Slide to send";
+    ? "Message sent"
+    : sending
+      ? "Sending…"
+      : progress >= 0.8
+        ? "Release to send"
+        : "Slide to send";
 
   return (
     <div
       ref={trackRef}
       className={`slide-send${dragging ? " is-dragging" : ""}${sent ? " is-done" : ""}`}
       role="slider"
-      tabIndex={sent ? -1 : 0}
+      tabIndex={sent || sending ? -1 : 0}
       aria-label="Slide to send message"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(progress * 100)}
       aria-valuetext={label}
-      aria-disabled={sent}
+      aria-disabled={sent || sending}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -244,35 +255,91 @@ function LikeBar() {
 export default function ContactPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const formRef = useRef(null);
+  const sendingRef = useRef(false);
 
   const updateField = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+
+    if (status === "success" || status === "error") {
+      setStatus("idle");
+      setSent(false);
+      setErrorMessage("");
+    }
+  };
+
+  const sendMessage = async () => {
+    if (sendingRef.current) return false;
+
+    if (!WEB3FORMS_KEY) {
+      setStatus("error");
+      setErrorMessage(
+        "Email sending is not configured yet. Please email me directly instead.",
+      );
+      return false;
+    }
+
+    sendingRef.current = true;
+    setStatus("sending");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(WEB3FORMS_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `Portfolio enquiry${form.name ? ` from ${form.name}` : ""}`,
+          from_name: form.name || "Portfolio visitor",
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          botcheck: "",
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.success === false) {
+        throw new Error(
+          data.message || `Could not send your message (${response.status}).`,
+        );
+      }
+
+      setSent(true);
+      setStatus("success");
+      setForm(EMPTY_FORM);
+      sendingRef.current = false;
+      return true;
+    } catch (error) {
+      sendingRef.current = false;
+      setStatus("error");
+      setErrorMessage(
+        error?.message === "Failed to fetch"
+          ? "Could not reach the mail service. Check your connection and try again."
+          : error?.message || "Could not send your message. Please try again.",
+      );
+      return false;
+    }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    const subject = encodeURIComponent(
-      `Portfolio enquiry${form.name ? ` from ${form.name}` : ""}`,
-    );
-    const body = encodeURIComponent(
-      `${form.message}\n\n— ${form.name || "Name"}${form.email ? ` (${form.email})` : ""}`,
-    );
-
-    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
-    setSent(true);
+    void sendMessage();
   };
 
-  const handleSlideComplete = () => {
+  const handleSlideComplete = async () => {
     const formElement = formRef.current;
     if (!formElement) return false;
 
     if (!formElement.reportValidity()) return false;
 
-    formElement.requestSubmit();
-    return true;
+    return sendMessage();
   };
 
   return (
@@ -282,7 +349,10 @@ export default function ContactPage() {
           Have a project, an idea, or just a question? My inbox is always open.
         </p>
 
-        <a className="contact-mail" href={`mailto:${profile.email}`}>
+        <a
+          className="contact-mail"
+          href={`mailto:${profile.email}?subject=Project%20enquiry`}
+        >
           {profile.email}
           <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
         </a>
@@ -366,12 +436,25 @@ export default function ContactPage() {
           />
         </div>
 
-        <SlideToSend sent={sent} onComplete={handleSlideComplete} />
+        <SlideToSend
+          sent={sent}
+          sending={status === "sending"}
+          onComplete={handleSlideComplete}
+        />
 
-        {sent && (
+        {status === "success" && (
           <p className="form-note" role="status">
-            Your mail client should open with the message ready to send. If it
-            doesn&apos;t, write to {profile.email} directly.
+            Thanks — your message has been sent to {profile.email}.
+          </p>
+        )}
+
+        {status === "error" && (
+          <p className="form-note form-note--error" role="alert">
+            {errorMessage}{" "}
+            <a href={`mailto:${profile.email}?subject=Project%20enquiry`}>
+              Email me directly
+            </a>
+            .
           </p>
         )}
       </form>

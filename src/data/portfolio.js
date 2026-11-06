@@ -10,7 +10,7 @@ export const profile = {
   role: "Video Editor",
   cardRole: "Video Editor",
   location: "Remote · Worldwide",
-  email: "hello@nbthbn.dev",
+  email: "nbthbn.media@gmail.com",
   photo: "/card-front.png",
   availability: "Available for work",
   tagline:
@@ -179,18 +179,18 @@ export const socials = [
     id: "instagram",
     label: "Instagram",
     handle: "@nbthbn",
-    href: "https://www.instagram.com/",
+    href: "https://www.instagram.com/nbthbn/",
   },
   {
     id: "linkedin",
     label: "LinkedIn",
-    handle: "in/nbthbn",
-    href: "https://www.linkedin.com/",
+    handle: "in/nithin-bhaskaran",
+    href: "https://www.linkedin.com/in/nithin-bhaskaran-71aa8b240",
   },
   {
     id: "email",
     label: "Email",
-    handle: "hello@nbthbn.dev",
-    href: "mailto:hello@nbthbn.dev",
+    handle: "nbthbn.media@gmail.com",
+    href: "mailto:nbthbn.media@gmail.com?subject=Project%20enquiry",
   },
 ];
