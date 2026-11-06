@@ -291,7 +291,6 @@ export default function ContactPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify({
           access_key: WEB3FORMS_KEY,
@@ -321,7 +320,9 @@ export default function ContactPage() {
       sendingRef.current = false;
       setStatus("error");
       setErrorMessage(
-        error?.message || "Could not send your message. Please try again.",
+        error?.message === "Failed to fetch"
+          ? "Could not reach the mail service. Check your connection and try again."
+          : error?.message || "Could not send your message. Please try again.",
       );
       return false;
     }
