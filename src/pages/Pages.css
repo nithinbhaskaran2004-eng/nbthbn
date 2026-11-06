@@ -1347,6 +1347,16 @@
   color: #a78bfa;
 }
 
+.form-note a {
+  color: #e9d5ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.form-note--error {
+  color: #fda4af;
+}
+
 /* like bar */
 
 .like-bar {
