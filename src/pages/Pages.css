@@ -198,6 +198,28 @@
   background-clip: padding-box;
 }
 
+/* Fit-to-panel body (Contact): no scroll rail. Height-limited
+   screens keep an invisible scroll fallback so nothing gets clipped. */
+.page-body--fit {
+  overflow: hidden;
+}
+
+@media (max-width: 900px), (max-height: 760px) {
+  .page-body--fit {
+    overflow-y: auto;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .page-body--fit::-webkit-scrollbar {
+    display: none;
+
+    width: 0;
+    height: 0;
+  }
+}
+
 /* shared type */
 
 .page-lede {
@@ -218,6 +240,15 @@
   line-height: 1.75;
 
   color: #bdaed4;
+}
+
+.page-lede strong,
+.page-text strong {
+  font-weight: 600;
+
+  color: #f5f0ff;
+
+  text-shadow: 0 0 16px rgba(192, 132, 252, 0.28);
 }
 
 .section-heading {
@@ -502,31 +533,9 @@
   color: #9d87bd;
 }
 
+/* location badge inside the profile card */
+
 .profile-location svg {
-  color: #a855f7;
-}
-
-.about-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 18px;
-
-  margin: 4px 0 26px;
-
-  font-family: "Fira Code", monospace;
-  font-size: 11px;
-  letter-spacing: 0.6px;
-
-  color: #9d87bd;
-}
-
-.about-meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.about-meta svg {
   color: #a855f7;
 }
 
@@ -664,71 +673,108 @@
   color: #a99abd;
 }
 
-/* side column */
+/* side column — core stack */
 
-.side-card {
-  padding: 22px;
-
-  border: 1px solid rgba(168, 85, 247, 0.16);
-  border-radius: 20px;
-
-  background: rgba(20, 4, 35, 0.45);
+.stack-board {
+  padding-top: 4px;
 }
 
-.side-card .section-heading {
-  margin-top: 0;
+.stack-board-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid rgba(168, 85, 247, 0.22);
 }
 
-.stack-group + .stack-group {
-  margin-top: 20px;
-}
-
-.stack-group-label {
-  display: block;
-  margin-bottom: 10px;
+.stack-board-title {
+  margin: 0;
 
   font-family: "Fira Code", monospace;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1.8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.6px;
   text-transform: uppercase;
 
-  color: #8b76a8;
+  color: #a78bfa;
 }
 
-.chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-
-  padding: 5px 10px;
-
-  border: 1px solid rgba(168, 85, 247, 0.24);
-  border-radius: 999px;
-
-  background: rgba(109, 40, 217, 0.14);
-
+.stack-board-meta {
   font-family: "Fira Code", monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.4px;
+  font-size: 8.5px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+
+  color: #6f5c8a;
+}
+
+.stack-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 18px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.stack-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+
+  padding: 11px 0;
+
+  border-bottom: 1px solid rgba(168, 85, 247, 0.09);
+
+  transition: border-color 0.25s ease;
+}
+
+.stack-list-item:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.stack-list-index {
+  font-family: "Fira Code", monospace;
+  font-size: 8.5px;
+  letter-spacing: 1px;
+
+  color: #6f5c8a;
+
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+.stack-list-name {
+  min-width: 0;
+
+  font-size: 12.5px;
+  line-height: 1.35;
 
   color: #d8c7ec;
 
   transition:
-    background 0.25s ease,
-    border-color 0.25s ease,
-    color 0.25s ease;
+    color 0.25s ease,
+    text-shadow 0.25s ease;
 }
 
-.chip:hover {
-  border-color: rgba(192, 132, 252, 0.6);
-  background: rgba(168, 85, 247, 0.24);
+.stack-list-item:hover {
+  border-color: rgba(168, 85, 247, 0.28);
+}
+
+.stack-list-item:hover .stack-list-index {
+  color: #d8b4fe;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.7);
+}
+
+.stack-list-item:hover .stack-list-name {
   color: #ffffff;
+  text-shadow: 0 0 14px rgba(192, 132, 252, 0.5);
 }
 
 /* ------------------------------------------------------------
@@ -740,6 +786,156 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 34px;
   align-items: start;
+}
+
+/* Contact panel is fit-to-screen: tighten the vertical rhythm so the
+   whole layout, including the like bar, is visible without scrolling. */
+.page-body--fit {
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+
+.page-body--fit .contact-grid {
+  gap: 20px;
+}
+
+.page-body--fit .page-lede {
+  margin-bottom: 10px;
+
+  font-size: clamp(15px, 1.4vw, 17px);
+  line-height: 1.55;
+}
+
+.page-body--fit .contact-mail {
+  margin: 2px 0 16px;
+
+  font-size: clamp(13px, 1.4vw, 15px);
+}
+
+.page-body--fit .social-list {
+  gap: 6px;
+}
+
+.page-body--fit .social-link {
+  padding: 9px 13px;
+}
+
+.page-body--fit .social-icon {
+  width: 30px;
+  height: 30px;
+
+  border-radius: 8px;
+}
+
+.page-body--fit .contact-form {
+  gap: 10px;
+  padding: 18px;
+}
+
+.page-body--fit .field {
+  gap: 5px;
+}
+
+.page-body--fit .field-input {
+  padding: 9px 12px;
+}
+
+.page-body--fit .field-textarea {
+  min-height: 76px;
+  padding: 9px 12px;
+}
+
+.page-body--fit .slide-send {
+  margin-top: 2px;
+}
+
+.page-body--fit .like-bar {
+  margin-top: 0;
+  padding: 12px 16px;
+}
+
+/* Extra-dense contact rhythm for shorter laptop screens. */
+@media (max-height: 820px) {
+  .page-body--fit {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .page-body--fit .contact-grid {
+    gap: 14px;
+  }
+
+  .page-body--fit .page-lede {
+    margin-bottom: 8px;
+
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .page-body--fit .contact-mail {
+    margin: 2px 0 12px;
+
+    font-size: 13.5px;
+  }
+
+  .page-body--fit .social-list {
+    gap: 5px;
+  }
+
+  .page-body--fit .social-link {
+    padding: 7px 12px;
+  }
+
+  .page-body--fit .social-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .page-body--fit .contact-form {
+    gap: 8px;
+    padding: 14px;
+  }
+
+  .page-body--fit .field {
+    gap: 4px;
+  }
+
+  .page-body--fit .field-input {
+    padding: 8px 11px;
+  }
+
+  .page-body--fit .field-textarea {
+    min-height: 62px;
+    padding: 8px 11px;
+  }
+
+  .page-body--fit .like-bar {
+    padding: 10px 14px;
+  }
+}
+
+/* On short desktops, move the like bar under the intro column so the
+   form and like action both stay above the fold. */
+@media (min-width: 901px) and (max-height: 760px) {
+  .page-body--fit .contact-grid {
+    grid-template-areas:
+      "intro form"
+      "like form";
+    grid-template-rows: auto auto;
+  }
+
+  .page-body--fit .contact-intro {
+    grid-area: intro;
+  }
+
+  .page-body--fit .contact-form {
+    grid-area: form;
+  }
+
+  .page-body--fit .like-bar {
+    grid-area: like;
+    grid-column: auto;
+  }
 }
 
 .contact-mail {

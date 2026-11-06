@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Briefcase, GraduationCap, MapPin, Sparkles, Terminal } from "lucide-react";
+import { Briefcase, GraduationCap, MapPin, Sparkles } from "lucide-react";
 import { profile } from "../data/portfolio";
 import Reveal from "../components/Reveal";
 
@@ -8,6 +8,17 @@ const TIMELINE_ICONS = {
   graduation: GraduationCap,
   sparkles: Sparkles,
 };
+
+/** Turns **bold** markers in the bio into <strong> elements. */
+function renderRichText(text) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+
+    return part;
+  });
+}
 
 function ProfileCard() {
   const [photoFailed, setPhotoFailed] = useState(false);
@@ -60,20 +71,9 @@ export default function AboutPage() {
             delay={0.05 + index * 0.07}
             className={index === 0 ? "page-lede" : "page-text"}
           >
-            {paragraph}
+            {renderRichText(paragraph)}
           </Reveal>
         ))}
-
-        <Reveal className="about-meta" delay={0.28}>
-          <span>
-            <MapPin size={14} strokeWidth={1.8} aria-hidden="true" />
-            {profile.location}
-          </span>
-          <span>
-            <Terminal size={14} strokeWidth={1.8} aria-hidden="true" />
-            {profile.role}
-          </span>
-        </Reveal>
 
         <div className="stat-row">
           {profile.stats.map((stat, index) => (
@@ -123,21 +123,24 @@ export default function AboutPage() {
           <ProfileCard />
         </Reveal>
 
-        <Reveal className="side-card" delay={0.3}>
-          <h3 className="section-heading">Stack</h3>
+        <Reveal className="stack-board" delay={0.3}>
+          <div className="stack-board-head">
+            <h3 className="stack-board-title">Stack</h3>
+            <span className="stack-board-meta">
+              {String(profile.stack.length).padStart(2, "0")} core tools
+            </span>
+          </div>
 
-          {profile.stack.map((group) => (
-            <div className="stack-group" key={group.group}>
-              <span className="stack-group-label">{group.group}</span>
-              <div className="chip-row">
-                {group.items.map((item) => (
-                  <span className="chip" key={item}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+          <ul className="stack-list">
+            {profile.stack.map((item, index) => (
+              <li className="stack-list-item" key={item}>
+                <span className="stack-list-index">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="stack-list-name">{item}</span>
+              </li>
+            ))}
+          </ul>
         </Reveal>
       </aside>
     </div>

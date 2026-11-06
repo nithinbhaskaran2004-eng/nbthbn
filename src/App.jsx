@@ -14,7 +14,7 @@ import "./App.css";
 const PAGES = {
   about: { label: "About", title: "About Me", Component: AboutPage },
   projects: { label: "Projects", title: "Edits & Motion", Component: ProjectsPage },
-  contact: { label: "Contact", title: "Get In Touch", Component: ContactPage },
+  contact: { label: "Contact", title: "Get In Touch", Component: ContactPage, noScroll: true },
 };
 
 const PAGE_SEQUENCE = ["home", "about", "projects", "contact"];
@@ -247,6 +247,7 @@ function App() {
             label={page.label}
             title={page.title}
             direction={direction}
+            noScroll={page.noScroll}
             onClose={closePage}
           >
             <PageComponent />
